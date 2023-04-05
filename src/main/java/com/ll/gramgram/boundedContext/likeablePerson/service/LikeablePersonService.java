@@ -45,17 +45,7 @@ public class LikeablePersonService {
         return RsData.of("S-1", "입력하신 인스타유저(%s)를 호감상대로 등록되었습니다.".formatted(username), likeablePerson);
     }
 
-    @Transactional
-    public RsData<LikeablePerson> deleteLikeablePerson(LikeablePerson likeablePerson){
-        this.likeablePersonRepository.delete(likeablePerson);
-        return RsData.of("S-2", "호감 표시한 인스타유저(%s)가 삭제되었습니다.".formatted(likeablePerson.getToInstaMemberUsername()));
-    }
-
     public List<LikeablePerson> findByFromInstaMemberId(Long fromInstaMemberId) {
         return likeablePersonRepository.findByFromInstaMemberId(fromInstaMemberId);
-    }
-
-    public LikeablePerson findByLikeablePerson(Long id) {
-        return likeablePersonRepository.findById(id).orElse(null);
     }
 }

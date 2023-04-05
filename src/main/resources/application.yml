@@ -11,7 +11,7 @@ spring:
       client:
         registration:
           kakao:
-            clientId: bc8aa0bbc3f707d7108f86871c4f07b3 //테스트 후 삭제
+            clientId: 0e59d4068f2c83091f3c4511cb557c15
             scope:
             client-name: Kakao
             authorization-grant-type: authorization_code
