@@ -52,7 +52,14 @@ public class LikeablePersonService {
             if (duplicateLikeablePerson.getAttractiveTypeCode() == attractiveTypeCode) { // 호감 사유까지 같다면
                 return RsData.of("F-4", "중복된 호감표시입니다.");
             }
+
+            // 호감을 표시하는 사람과 호감을 받는 사람이 같을 때 수정이 가능하다.
+            String duplicateLikeablePersonAttractiveTypeCodeName = duplicateLikeablePerson.getAttractiveTypeDisplayName(); // 기존의 호감 사유
+            duplicateLikeablePerson.setAttractiveTypeCode(attractiveTypeCode); // 호감 사유 변경
+            return RsData.of("S-2", "%s에 대한 호감사유를 %s에서 %s으로 변경합니다.".formatted(toInstaMember.getUsername(),duplicateLikeablePersonAttractiveTypeCodeName,likeablePerson.getAttractiveTypeDisplayName()));
+
         }
+
 
         likeablePersonRepository.save(likeablePerson); // 저장
 
