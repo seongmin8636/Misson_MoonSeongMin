@@ -23,7 +23,7 @@ public class LikeablePersonService {
 
     @Transactional
     public RsData<LikeablePerson> like(Member member, String username, int attractiveTypeCode) {
-        if (member.hasConnectedInstaMember() == false) {
+        if (!member.hasConnectedInstaMember()) {
             return RsData.of("F-2", "먼저 본인의 인스타그램 아이디를 입력해야 합니다.");
         }
 
@@ -46,6 +46,13 @@ public class LikeablePersonService {
                 .toInstaMemberUsername(toInstaMember.getUsername()) // 중요하지 않음
                 .attractiveTypeCode(attractiveTypeCode) // 1=외모, 2=능력, 3=성격
                 .build();
+
+        LikeablePerson duplicateLikeablePerson = likeablePersonRepository.findByFromInstaMemberIdAndToInstaMember_username(fromInstaMember.getId(), username);
+        if(duplicateLikeablePerson != null) { // 호감을 표시하는 사람과 호감을 받는 사람이 같은 경우가 있을 때
+            if (duplicateLikeablePerson.getAttractiveTypeCode() == attractiveTypeCode) { // 호감 사유까지 같다면
+                return RsData.of("F-4", "중복된 호감표시입니다.");
+            }
+        }
 
         likeablePersonRepository.save(likeablePerson); // 저장
 
