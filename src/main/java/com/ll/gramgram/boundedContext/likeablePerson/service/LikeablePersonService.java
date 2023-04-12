@@ -54,9 +54,9 @@ public class LikeablePersonService {
             }
 
             // 호감을 표시하는 사람과 호감을 받는 사람이 같을 때 수정이 가능하다.
-            String duplicateLikeablePersonAttractiveTypeCodeName = duplicateLikeablePerson.getAttractiveTypeDisplayName(); // 기존의 호감 사유
+            String duplicateAttractiveType = duplicateLikeablePerson.getAttractiveTypeDisplayName(); // 기존의 호감 사유
             duplicateLikeablePerson.setAttractiveTypeCode(attractiveTypeCode); // 호감 사유 변경
-            return RsData.of("S-2", "%s에 대한 호감사유를 %s에서 %s으로 변경합니다.".formatted(toInstaMember.getUsername(),duplicateLikeablePersonAttractiveTypeCodeName,likeablePerson.getAttractiveTypeDisplayName()));
+            return RsData.of("S-2", "%s에 대한 호감사유를 %s에서 %s으로 변경합니다.".formatted(username,duplicateAttractiveType,likeablePerson.getAttractiveTypeDisplayName()));
 
         }
 
