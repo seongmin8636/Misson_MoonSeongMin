@@ -1,5 +1,6 @@
 package com.ll.gramgram.boundedContext.likeablePerson.service;
 
+import com.ll.gramgram.base.appConfig.AppConfig;
 import com.ll.gramgram.base.rsData.RsData;
 import com.ll.gramgram.boundedContext.instaMember.entity.InstaMember;
 import com.ll.gramgram.boundedContext.instaMember.service.InstaMemberService;
@@ -22,12 +23,16 @@ public class LikeablePersonService {
 
     @Transactional
     public RsData<LikeablePerson> like(Member member, String username, int attractiveTypeCode) {
-        if (member.hasConnectedInstaMember() == false) {
+        if (!member.hasConnectedInstaMember()) {
             return RsData.of("F-2", "먼저 본인의 인스타그램 아이디를 입력해야 합니다.");
         }
 
         if (member.getInstaMember().getUsername().equals(username)) {
             return RsData.of("F-1", "본인을 호감상대로 등록할 수 없습니다.");
+        }
+
+        if (member.getInstaMember().getFromLikeablePeople().size() == AppConfig.getLikeablePersonFromMax()) {
+            return RsData.of("F-3", "호감 상대는 최대 10명까지 가능합니다.");
         }
 
         InstaMember fromInstaMember = member.getInstaMember();
@@ -41,6 +46,20 @@ public class LikeablePersonService {
                 .toInstaMemberUsername(toInstaMember.getUsername()) // 중요하지 않음
                 .attractiveTypeCode(attractiveTypeCode) // 1=외모, 2=능력, 3=성격
                 .build();
+
+        LikeablePerson duplicateLikeablePerson = likeablePersonRepository.findByFromInstaMemberIdAndToInstaMember_username(fromInstaMember.getId(), username);
+        if(duplicateLikeablePerson != null) { // 호감을 표시하는 사람과 호감을 받는 사람이 같은 경우가 있을 때
+            if (duplicateLikeablePerson.getAttractiveTypeCode() == attractiveTypeCode) { // 호감 사유까지 같다면
+                return RsData.of("F-4", "중복된 호감표시입니다.");
+            }
+
+            // 호감을 표시하는 사람과 호감을 받는 사람이 같을 때 수정이 가능하다.
+            String duplicateAttractiveType = duplicateLikeablePerson.getAttractiveTypeDisplayName(); // 기존의 호감 사유
+            duplicateLikeablePerson.setAttractiveTypeCode(attractiveTypeCode); // 호감 사유 변경
+            return RsData.of("S-2", "%s에 대한 호감사유를 %s에서 %s으로 변경합니다.".formatted(username,duplicateAttractiveType,likeablePerson.getAttractiveTypeDisplayName()));
+
+        }
+
 
         likeablePersonRepository.save(likeablePerson); // 저장
 
